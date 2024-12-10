@@ -18,10 +18,12 @@ OnEventDefinir(*){
         MsgBox "Nenhum arquivo foi selecionado.", "Aviso", 48
         Return
     }
+    
 
     for file in SelectedFiles {
 
         if(RegExMatch(file,"(Folha de Pagamento -Normal).+\.txt",&match)){
+            GetNomeEmpresa(file)
             ExtraiFP(file)
             ExtraiFGTS(file)
             ExtraiGPS(file)
@@ -299,6 +301,19 @@ OnEventLancar(*){
             Global DC := "INSS S/Hon. Contábeis"
             LancaDescontosAutonomo()
 
+        }
+    }
+}
+
+GetNomeEmpresa(arq){
+
+    Aux := FileOpen(arq,"r")
+    while(!(Aux.AtEOF)){
+        Linha := Aux.ReadLine()
+
+        if(RegExMatch(Linha, "\|\sApelido:\s+\w+\s+Razao Social:\s+[^Pag]+Pag:1\|", &match)){
+
+            Global NomeEmpresa := RegExFindValue(Linha,"\|\sApelido:\s+([\w]+)\s+Razao Social:\s+[^Pag]+Pag:1\|")
         }
     }
 }
@@ -902,7 +917,7 @@ LancaPensao(){
     Sleep SleepTime
     Sleeper(0,40,4)
     Sleep SleepTime
-    if(DropDownList2.text == "Mori Elet"){
+    if(NomeEmpresa == "MORIELET"){
         Sleeper(6,70,1)
     }else{
         Sleeper(5,70,1)
@@ -1256,12 +1271,11 @@ GrupoPensao() {
         ; Lista de seleção
         myGui.SetFont("s10", "Segoe UI")
         myGui.Add("Text", "x26 y80 w120 h20 BackgroundTrans", "Lançamento tipo:")
-        Global DropDownList1 := myGui.Add("DropDownList", "x150 y78 w200 choose1 cBlack", ["Folha Normal", "Pró-Labore", "Autônomos"])
-        Global DropDownList2 := myGui.Add("DropDownList", "x380 y78 w95 choose1 cBlack", ["Convencional", "Mori Elet"])
+        Global DropDownList1 := myGui.Add("DropDownList", "x150 y78 w200 choose1  cBlack", ["Folha Normal", "Pró-Labore", "Autônomos"])
 
         ; Botões
-        ButtonDefinirCaminhoNFE := myGui.Add("Button", "x26 y150 w220 h40 BackgroundGray cWhite", "&Selecionar Arquivo")
-        ButtonLancar := myGui.Add("Button", "x255 y150 w220 h40 BackgroundGray cWhite", "&Lançar")
+        ButtonDefinirCaminhoNFE := myGui.Add("Button", "x26 y150 w220 h40 BackgroundGray", "&Selecionar Arquivo")
+        ButtonLancar := myGui.Add("Button", "x255 y150 w220 h40 BackgroundGray", "&Lançar")
 
         ; Rodapé
         myGui.SetFont("s8", "Segoe UI")
