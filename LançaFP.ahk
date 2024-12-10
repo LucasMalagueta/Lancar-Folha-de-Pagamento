@@ -1,233 +1,305 @@
-#Requires AutoHotkey v2
+﻿#Requires AutoHotkey v2
 #SingleInstance Force
 #Include <FindTextV2>
 #Include <matFunctionsV2>
 #Include <AccV2>
 #Include <UIA>
+TraySetIcon("C:\Users\" A_Username "\Documents\AutoHotkey\Lib\pngwing.com.ico")
 
 Global SleepTime := 100
 Global dia := 0
 
 
+OnEventDefinir(*){
 
-'::{
-    Global Descontos := 0
-    Global Auxiliar := 0
-    Global Aux := FileOpen("ProLaboreSócios.txt", "r")
+    Global SelectedFiles := FileSelect("M1", "", "Selecione um arquivo", "TXT (*.txt)")
 
-    If WinActive("SAN - Contabilidade"){
+    if (SelectedFiles.Length = 0) {
+        MsgBox "Nenhum arquivo foi selecionado.", "Aviso", 48
+        Return
+    }
 
-        WinActive "Lançamentos Contábeis"
+    for file in SelectedFiles {
 
-        ContwinEl := UIA.ElementFromHandle("SAN - Contabilidade")
-
-        ;getch Mês
-        MesO := (ContwinEl.WaitElementFromPath("Y/XIYYr3/").Dump())
-
-        REGEX := "Value:\s`"([^\s]+)"
-        Global Mes := RegExFindValue(MesO, REGEX)
-        GetDia(Mes)
-
-        ;getch Ano
-        AnoO := (ContwinEl.WaitElementFromPath("Y/XIYYr3").Dump())
-
-        REGEX := "Value:\s`"([^\s]+)`""
-        Global Ano := RegExFindValue(AnoO, REGEX)
-        
-
-        ContwinEl.WaitElementFromPath("Y/XIYYqL0").ControlClick()
-
-        Sleep 400
-
-        Send 1
-
-        If WinActive("Confirmação!"){
-            Sleeper("{Enter}",70,1)
+        if(RegExMatch(file,"(Folha de Pagamento -Normal).+\.txt",&match)){
+            ExtraiFP(file)
+            ExtraiFGTS(file)
+            ExtraiGPS(file)
+            continue
         }
+        if(RegExMatch(file,"(Folha de Pro Labore).+\.txt",&match)){
+            ExtraiProLabore(file)
+            continue
+        }
+        if(RegExMatch(file,"(Folha de Autonomo).+\.txt",&match)){
+            ExtraiAutonomo(file)
+            continue
+        }
+    }
+}
 
-        Sleep 175
-        Sleeper("{Enter}",70,2)
 
-        Sleep 175
-        Send dia
+OnEventLancar(*){
 
-        GetProLabore(Aux)
 
-        while(true){
+    if(DropDownList1.text == "Folha Normal"){
+
+
+        Global T := true
+        Global Aux := FileOpen("DOC/Proventos&Descontos.txt", "r")
+        WinActivate("SAN - Contabilidade")
+
+        If WinActive("SAN - Contabilidade"){
 
             WinActive "Lançamentos Contábeis"
 
-            LancaProLabore()
+            ContwinEl := UIA.ElementFromHandle("SAN - Contabilidade")
 
-            if(Aux.AtEOF){
-                break
+            ;getch Mês
+            MesO := (ContwinEl.WaitElementFromPath("Y/XIYYr3/").Dump())
+
+            REGEX := "Value:\s`"([^\s]+)"
+            Global Mes := RegExFindValue(MesO, REGEX)
+            GetDia(Mes)
+
+            ;getch Ano
+            AnoO := (ContwinEl.WaitElementFromPath("Y/XIYYr3").Dump())
+
+            REGEX := "Value:\s`"([^\s]+)`""
+            Global Ano := RegExFindValue(AnoO, REGEX)
+
+            Sleep 175
+
+            ContwinEl.WaitElementFromPath("Y/XIYYqL0").ControlClick()
+
+            Sleep 400
+
+            Send 1
+            
+            Sleeper("{Enter}",70,1)
+            
+
+            Sleep 175
+
+            If WinActive("Confirmação!"){
+                Sleeper("{Enter}",70,1)
+            }else{
+
             }
+            Sleeper("{Enter}",70,1)
+
+            Sleep 175
+            Send dia
+
+            Get(Aux)
+
+            while(true){
+                If WinExist("SAN - Contabilidade"){
+
+                    WinActive "Lançamentos Contábeis"
+
+                    if(GrupoSalario()){
+
+                        LancaSalario()
+
+                    }
+                    else if(GrupoINSS()){
+
+                        LancaINSS()
+
+                    }
+                    else if(GrupoFerias()){
+
+                        LancaFerias()
+                    }
+                    else if(Grupo13()){
+
+                        Lanca13()
+
+                    }
+                    else if(GrupoSalarioMaternidade()){
+
+                        LancaMaternidade()
+
+                    }
+                    else if(GrupoFalta()){
+
+                        LancaFalta()
+
+                    }
+                    else if(GrupoLiquidoRecisao()){
+
+                        LancaLiquidoRecisao()
+
+                    }
+                    else if(GrupoLiquidoFerias()){
+
+                        LancaLiquidoFerias()
+
+                    }
+                    else if(GrupoContribuicao()){
+
+                        LancaContribuicao()
+
+                    }
+                    else if(GrupoPensao()){
+
+                        LancaPensao()
+
+                    }
+
+                    if(Aux.AtEOF){
+                        break
+                    }
+
+                    Get(Aux)
+                }
+            }
+            LancaFGTS()
+        }
+
+    }
+    else if(DropDownList1.text == "Pró-Labore"){
+        Global Descontos := 0
+        Global Auxiliar := 0
+        Global Aux := FileOpen("DOC/ProLaboreSócios.txt", "r")
+        WinActivate("SAN - Contabilidade")
+
+        If WinActive("SAN - Contabilidade"){
+
+            WinActive "Lançamentos Contábeis"
+
+            ContwinEl := UIA.ElementFromHandle("SAN - Contabilidade")
+
+            ;getch Mês
+            MesO := (ContwinEl.WaitElementFromPath("Y/XIYYr3/").Dump())
+
+            REGEX := "Value:\s`"([^\s]+)"
+            Global Mes := RegExFindValue(MesO, REGEX)
+            GetDia(Mes)
+
+            ;getch Ano
+            AnoO := (ContwinEl.WaitElementFromPath("Y/XIYYr3").Dump())
+
+            REGEX := "Value:\s`"([^\s]+)`""
+            Global Ano := RegExFindValue(AnoO, REGEX)
+            
+
+            ContwinEl.WaitElementFromPath("Y/XIYYqL0").ControlClick()
+
+            Sleep 400
+
+            Send 1
+            
+            Sleeper("{Enter}",70,1)
+            
+
+            Sleep 175
+
+            If WinActive("Confirmação!"){
+                Sleeper("{Enter}",70,1)
+            }else{
+
+            }
+            Sleeper("{Enter}",70,1)
+
+            Sleep 175
+            Send dia
 
             GetProLabore(Aux)
 
-        }
-        GetProLaboreGPS()
-        LancaGPSProLabore()
-
-        Global VL := PontoVirgula(Descontos)
-        Global DC := "INSS S/PRO-LABORE"
-        LancaDescontos()
-
-        FileDelete "ProLaboreGPS.txt"
-        FileDelete "ProLaboreSócios.txt"
-    }
-}
-
-
-
-
-
-
-^\::{
-    SelectedFile := FileSelect(1, "", "Selecione um Arquivo", "All Files (*.*)|*.*")
-    Global filePath := SelectedFile
-
-    if SelectedFile = ""{
-        MsgBox "Nenhum arquivo foi selecionado.", "Aviso", 48
-        Return
-    } else{
-        ExtraiProLabore(filePath)
-        
-    }
-}
-
-
-+\::{
-    SelectedFile := FileSelect(1, "", "Selecione um Arquivo", "All Files (*.*)|*.*")
-    Global filePath := SelectedFile
-
-    if SelectedFile = ""{
-        MsgBox "Nenhum arquivo foi selecionado.", "Aviso", 48
-        Return
-    } else{
-        ExtraiFP(filePath)
-        
-    }
-}
-
-
-
-\::{
-
-    Global T := true
-    Global Aux := FileOpen("Proventos&Descontos.txt", "r")
-
-    If WinActive("SAN - Contabilidade"){
-
-        WinActive "Lançamentos Contábeis"
-
-        ContwinEl := UIA.ElementFromHandle("SAN - Contabilidade")
-
-        ;getch Mês
-        MesO := (ContwinEl.WaitElementFromPath("Y/XIYYr3/").Dump())
-
-        REGEX := "Value:\s`"([^\s]+)"
-        Global Mes := RegExFindValue(MesO, REGEX)
-        GetDia(Mes)
-
-        ;getch Ano
-        AnoO := (ContwinEl.WaitElementFromPath("Y/XIYYr3").Dump())
-
-        REGEX := "Value:\s`"([^\s]+)`""
-        Global Ano := RegExFindValue(AnoO, REGEX)
-
-        Sleep 175
-
-        ContwinEl.WaitElementFromPath("Y/XIYYqL0").ControlClick()
-
-        Sleep 400
-
-        Send 1
-        
-        Sleeper("{Enter}",70,1)
-        
-
-        Sleep 175
-
-        If WinActive("Confirmação!"){
-            Sleeper("{Enter}",70,1)
-        }else{
-
-        }
-        Sleeper("{Enter}",70,1)
-
-        Sleep 175
-        Send dia
-
-        Get(Aux)
-
-        while(true){
-            If WinExist("SAN - Contabilidade"){
+            while(true){
 
                 WinActive "Lançamentos Contábeis"
 
-                if(GrupoSalario()){
-
-                    LancaSalario()
-
-                }
-                else if(GrupoINSS()){
-
-                    LancaINSS()
-
-                }
-                else if(GrupoFerias()){
-
-                    LancaFerias()
-                }
-                else if(Grupo13()){
-
-                    Lanca13()
-
-                }
-                else if(GrupoSalarioMaternidade()){
-
-                    LancaMaternidade()
-
-                }
-                else if(GrupoFalta()){
-
-                    LancaFalta()
-
-                }
-                else if(GrupoLiquidoRecisao()){
-
-                    LancaLiquidoRecisao()
-
-                }
-                else if(GrupoLiquidoFerias()){
-
-                    LancaLiquidoFerias()
-
-                }
-                else if(GrupoContribuicao()){
-
-                    LancaContribuicao()
-
-                }
-                else if(GrupoPensao()){
-
-                    LancaPensao()
-
-                }
+                LancaProLabore()
 
                 if(Aux.AtEOF){
                     break
                 }
 
-                Get(Aux)
-            }
-        }
-        LancaFGTS()
+                GetProLabore(Aux)
 
-        FileDelete "GPSNormal.txt"
-        FileDelete "FGTSMensal.txt"
-        FileDelete "Proventos&Descontos.txt"
+            }
+            GetProLaboreGPS()
+            LancaGPSProLabore()
+
+            Global VL := PontoVirgula(Descontos)
+            Global DC := "INSS S/PRO-LABORE"
+            LancaDescontos()
+
+        }
+    }
+    else if(DropDownList1.text == "Autônomos"){
+        Global Descontos := 0
+        Global Auxiliar := 0
+        Global Aux := FileOpen("DOC/Autonomos.txt", "r")
+        WinActivate("SAN - Contabilidade")
+
+        If WinActive("SAN - Contabilidade"){
+
+            WinActive "Lançamentos Contábeis"
+
+            ContwinEl := UIA.ElementFromHandle("SAN - Contabilidade")
+
+            ;getch Mês
+            MesO := (ContwinEl.WaitElementFromPath("Y/XIYYr3/").Dump())
+
+            REGEX := "Value:\s`"([^\s]+)"
+            Global Mes := RegExFindValue(MesO, REGEX)
+            GetDia(Mes)
+
+            ;getch Ano
+            AnoO := (ContwinEl.WaitElementFromPath("Y/XIYYr3").Dump())
+
+            REGEX := "Value:\s`"([^\s]+)`""
+            Global Ano := RegExFindValue(AnoO, REGEX)
+            
+
+            ContwinEl.WaitElementFromPath("Y/XIYYqL0").ControlClick()
+
+            Sleep 400
+
+            Send 1
+            
+            Sleeper("{Enter}",70,1)
+            
+
+            Sleep 175
+
+            If WinActive("Confirmação!"){
+                Sleeper("{Enter}",70,1)
+            }else{
+
+            }
+            Sleeper("{Enter}",70,1)
+
+            Sleep 175
+            Send dia
+
+            GetAutonomo(Aux)
+
+            while(true){
+
+                WinActive "Lançamentos Contábeis"
+
+                LancaAutonomo()
+
+                if(Aux.AtEOF){
+                    break
+                }
+
+                GetAutonomo(Aux)
+
+            }
+            GetAutonomoGPS()
+            LancaGPSProLabore()
+
+            Global VL := PontoVirgula(Descontos)
+            Global DC := "INSS S/Hon. Contábeis"
+            LancaDescontosAutonomo()
+
+        }
     }
 }
 
@@ -243,7 +315,7 @@ ExtraiFP(arq) {
         }
 
     }
-    Aux2 := FileOpen("Proventos&Descontos.txt", "w", "CP1252")
+    Aux2 := FileOpen("DOC/Proventos&Descontos.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -262,8 +334,6 @@ ExtraiFP(arq) {
     Aux.Close()
     Aux2.Close()
 
-    ExtraiFGTS(arq)
-
 }
 
 ;Extrai a linha a partir do FGTS Mensal
@@ -278,7 +348,7 @@ ExtraiFGTS(arq) {
         }
 
     }
-    Aux2 := FileOpen("FGTSMensal.txt", "w", "CP1252")
+    Aux2 := FileOpen("DOC/FGTSMensal.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -294,13 +364,12 @@ ExtraiFGTS(arq) {
     Aux.Close()
     Aux2.Close()
 
-    ExtraiGPS(arq)
 }
 
 ;Extrai a linha a partir do GPS
 ExtraiGPS(arq) {
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("GPSNormal.txt", "w", "CP1252")
+    Aux2 := FileOpen("DOC/GPSNormal.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -320,7 +389,49 @@ ExtraiGPS(arq) {
 ExtraiProLabore(arq) {
     ;Nome;Salário Liquido;Desconto
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("ProLaboreSócios.txt", "w", "CP1252")
+    Aux2 := FileOpen("DOC/ProLaboreSócios.txt", "w", "CP1252")
+
+
+    while (!(Aux.AtEOF)) {
+        Linha := Aux.ReadLine()
+
+        if (LinhaNomeProLabore(Linha)) {
+            ;Nome
+            Aux2.Write(RegExFindValue(Linha, "\|\s[Cod]+:\s[\d]+\s+Nome:([\wÀ-ÿ ]+?)(?=\s{2})\s+Dep.IR:\s+\d\s\|") ";")
+        }
+        if(LinhaLiquidoProLabore(Linha)){
+            ;Salário Liquido
+            Aux2.Write(RegExFindValue(Linha, "\|\sProventos:\s+[\d.,]+\s+Descontos:\s+[\d.,]+\s+Liquido:\s+([\d.,]+)\s\|") ";")
+            ;Descontos
+            Aux2.Write(RegExFindValue(Linha, "\|\sProventos:\s+[\d.,]+\s+Descontos:\s+([\d.,]+)\s+Liquido:\s+[\d.,]+\s\|") "`n")
+
+        }
+    }
+    Aux.Close()
+    Aux2.Close()
+
+    ;GPS
+    Cor := FileOpen(arq, "r")
+    Cor2 := FileOpen("DOC/ProLaboreGPS.txt", "w", "CP1252")
+
+    while (!(Cor.AtEOF)) {
+        Linha := Cor.ReadLine()
+
+        if (LinhaGPSProLabore(Linha)) {
+            Cor2.WriteLine(RegExFindValue(Linha, "\|\sCod.\s\d+\s+Empresa\s+([\d.,]+)\s+"))
+
+            break
+        }
+    }
+    Cor.Close()
+    Cor2.Close()
+
+}
+
+ExtraiAutonomo(arq) {
+    ;Nome;Salário Liquido;Desconto
+    Aux := FileOpen(arq, "r")
+    Aux2 := FileOpen("DOC/Autonomos.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -343,7 +454,7 @@ ExtraiProLabore(arq) {
 
     ;GPS
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("ProLaboreGPS.txt", "w", "CP1252")
+    Aux2 := FileOpen("DOC/AutonomosGPS.txt", "w", "CP1252")
 
     while (!(Aux.AtEOF)) {
         Linha := Aux.ReadLine()
@@ -355,6 +466,9 @@ ExtraiProLabore(arq) {
         }
     }
 
+    Aux.Close()
+    Aux2.Close()
+
 }
 
 
@@ -364,7 +478,7 @@ Get(Aux) {
     if (!Aux.AtEOF) {
         Linha := Aux.ReadLine()
         if (Linha != "") { ; Verifica se a linha foi lida corretamente
-            Global DC := RegExFindValue(Linha, "^\s+\d+\s([\wÀ-ÿ()º\.\/%\- ]+?)(?=\s{3})")
+            Global DC := RegExFindValue(Linha, "^\s+\d+\s([\wÀ-ÿ()º\.\/%\- ª]+?)(?=\s{3})")
             Global VL := RegExFindValue(Linha, "\s+([.,\d]+)\s$")
             Global VL := pontoNada(VL)
             if(VL == 0,00){
@@ -419,7 +533,7 @@ GetProLabore(Aux){
         Linha := Aux.ReadLine()
         pipe := StrSplit(Linha, ";")
 
-        Global DC := "PRO-LABORE " pipe[1]
+        Global DC := "PRÓ-LABORE " pipe[1]
         Global VL := pipe[2]
         Global VL := pontoNada(VL)
         ;Descontos
@@ -438,7 +552,7 @@ GetProLabore(Aux){
 
 GetProLaboreGPS(){
     ;GPS Pro Labore
-    Aux := FileOpen("ProLaboreGPS.txt", "r")
+    Aux := FileOpen("DOC/ProLaboreGPS.txt", "r")
     if (!Aux.AtEOF) {
         Linha := Aux.ReadLine()
         Global DC := "INSS"
@@ -448,10 +562,46 @@ GetProLaboreGPS(){
     Aux.Close()
 }
 
+;Get Autônomos
+GetAutonomo(Aux){
+
+    if (!Aux.AtEOF) {
+        Linha := Aux.ReadLine()
+        pipe := StrSplit(Linha, ";")
+
+        Global DC := "Autônomo " pipe[1]
+        Global VL := pipe[2]
+        Global VL := pontoNada(VL)
+        ;Descontos
+        Global Auxiliar := pipe[3]
+        Global Auxiliar := pontoNada(Auxiliar)
+        Global Auxiliar := VirgulaPonto(Auxiliar)
+        Global Descontos += Auxiliar + 0
+
+        
+    } else if(Aux.AtEOF){
+        MsgBox "TODOS OS LANÇAMENTOS RESPECTIVOS FORAM FEITOS.", "Aviso", 48
+        Aux.Close()
+    }
+    
+}
+
+GetAutonomoGPS(){
+    ;GPS Pro Labore
+    Aux := FileOpen("DOC/AutonomosGPS.txt", "r")
+    if (!Aux.AtEOF) {
+        Linha := Aux.ReadLine()
+        Global DC := "INSS S/AUTONOMO"
+        Global VL := Linha
+        Global VL := pontoNada(VL)
+    }
+    Aux.Close()
+}
+
 
 ;Lançamentos
 LancaFGTS(){
-    Global Aux := FileOpen("FGTSMensal.txt", "r")
+    Global Aux := FileOpen("DOC/FGTSMensal.txt", "r")
     GetFGTS(Aux)
         
     LancarFGTS()
@@ -460,8 +610,7 @@ LancaFGTS(){
 }
 
 LancaGPS(){
-    Global T := true
-    Global Aux := FileOpen("GPSNormal.txt", "r")
+    Global Aux := FileOpen("DOC/GPSNormal.txt", "r")
     Aux.ReadLine()
     while(true){
 
@@ -753,12 +902,67 @@ LancaPensao(){
     Sleep SleepTime
     Sleeper(0,40,4)
     Sleep SleepTime
-    Sleeper(5,70,1)
+    if(DropDownList2.text == "Mori Elet"){
+        Sleeper(6,70,1)
+    }else{
+        Sleeper(5,70,1)
+    }
     Sleep SleepTime
     
     Resto()
 
 }
+;Lançamentos Pro Labore
+
+LancaAutonomo(){
+    ;Regra
+    Sleeper(139,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(6,70,1)
+    Sleep 20
+    Sleeper(0,70,2)
+    Sleep SleepTime
+    Sleeper(1,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(1,70,1)
+    Sleep SleepTime
+
+    
+    Sleeper(0,40,2)
+    Sleep 20
+    Sleeper(151,70,1)
+    Sleep SleepTime
+    ;Descrição
+    Sleeper(DC,70,1)
+    Sleep SleepTime
+    Sleeper(" ",40,1)
+    Sleep 20
+    ;Data
+    Sleeper(Mes,70,1)
+    Sleep 20
+    Sleeper("/",40,1)
+    Sleep 20
+    Sleeper(Ano,70,1)
+    Sleep SleepTime
+    ;Value
+    Sleeper("{Tab}",70,1)
+    Sleep SleepTime
+    Sleeper(VL,70,1)
+    Sleep SleepTime
+    Sleeper("{Tab}",70,1)
+    Sleep SleepTime
+
+    Sleeper("!o",70,1)
+    Sleep SleepTime
+    Sleeper("{Tab}",70,1)
+}
+
 
 ;Lançamentos Pro Labore
 LancaGPSProLabore(){
@@ -793,6 +997,30 @@ LancaDescontos(){
     Sleeper(0,40,4)
     Sleep 20
     Sleeper(1,70,1)
+    Sleep 20
+    Sleeper(0,70,1)
+    Sleep SleepTime
+    Sleeper(065,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(1,70,1)
+    Sleep SleepTime
+
+    
+    Resto()
+
+}
+LancaDescontosAutonomo(){
+
+    ;Regra
+    Sleeper(139,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(6,70,1)
     Sleep 20
     Sleeper(0,70,1)
     Sleep SleepTime
@@ -963,11 +1191,11 @@ LinhaGPSProLabore(Linha) {
 
 ;Verifica em que grupo pertence o lançamento
 GrupoSalario() {
-    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial"
+    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor"
 }
 
 GrupoINSS() {
-    return DC == "INSS Sobre Salário" || DC == "IRRF Sobre Salário" || DC == "INSS Sobre Salário (Rescisão)" || DC == "INSS Sobre 13º Sal. (Rescisão)" || DC == "IRRF Descontado nas Férias" || DC == "INSS Férias Mês -Recibo"
+    return DC == "INSS Sobre Salário" || DC == "IRRF Sobre Salário" || DC == "INSS Sobre Salário (Rescisão)" || DC == "INSS Sobre 13º Sal. (Rescisão)" || DC == "IRRF Descontado nas Férias" || DC == "INSS Férias Mês -Recibo" || DC == "INSS Férias Mês Anterior"
 }
 
 GrupoFerias() {
@@ -983,7 +1211,7 @@ GrupoSalarioMaternidade() {
 }
 
 GrupoFalta() {
-    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Seguro de Vida" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado"
+    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Seguro de Vida" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Abono Pecuniário Mês Anterior" || DC == "1/3 Abono Pecuniário Mês Ant."
 }
 
 GrupoLiquidoRecisao() {
@@ -991,7 +1219,7 @@ GrupoLiquidoRecisao() {
 }
 
 GrupoLiquidoFerias() {
-    return DC == "Liquido de Férias"
+    return DC == "Liquido de Férias" || DC == "Férias Pagas Mês Anterior" || DC == "Liquido Férias Mês Anterior" || DC == "1/3 Ferias Pagas Mês Anterior"
 }
 
 GrupoContribuicao() {
@@ -1000,4 +1228,55 @@ GrupoContribuicao() {
 
 GrupoPensao() {
     return DC == "Pensão Alimenticia Salário" || DC == "Pensão Alimenticia"
+}
+
+
+
+
+
+;Chama a interface grafica (GUI)
++1:: {
+    if WinExist("Lança FP") {
+        WinClose("")
+    }
+
+     myGui := Construct()
+
+    Construct() {
+        Global myGui := Gui() ; Mantém a janela no topo.
+
+        ; Estilo e título
+        myGui.BackColor := "White" ; Fundo branco
+        myGui.Title := "Lança FP"
+
+        ; Título principal
+        myGui.SetFont("Bold s13", "Segoe UI")
+        myGui.Add("Text", "x20 y20 w483 h30 Center BackgroundTrans cf5821f", "Lança FP")
+
+        ; Lista de seleção
+        myGui.SetFont("s10", "Segoe UI")
+        myGui.Add("Text", "x26 y80 w120 h20 BackgroundTrans", "Lançamento tipo:")
+        Global DropDownList1 := myGui.Add("DropDownList", "x150 y78 w200 choose1 cBlack", ["Folha Normal", "Pró-Labore", "Autônomos"])
+        Global DropDownList2 := myGui.Add("DropDownList", "x380 y78 w95 choose1 cBlack", ["Convencional", "Mori Elet"])
+
+        ; Botões
+        ButtonDefinirCaminhoNFE := myGui.Add("Button", "x26 y150 w220 h40 BackgroundGray cWhite", "&Selecionar Arquivo")
+        ButtonLancar := myGui.Add("Button", "x255 y150 w220 h40 BackgroundGray cWhite", "&Lançar")
+
+        ; Rodapé
+        myGui.SetFont("s8", "Segoe UI")
+        myGui.Add("Text", "x20 y210 w483 h20 Center BackgroundTrans cGray", "Desenvolvido por Lucas Malagueta")
+
+        ; Eventos dos botões
+        ButtonDefinirCaminhoNFE.OnEvent("Click", OnEventDefinir)
+        ButtonLancar.OnEvent("Click", OnEventLancar)
+
+        ; Evento para fechar
+        myGui.OnEvent("Close", (*) => myGui.Destroy())
+
+        ; Exibe a GUI
+        myGui.Show("w523 h250")
+
+        Return myGui
+    }
 }
