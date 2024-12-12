@@ -149,6 +149,11 @@ OnEventLancar(*){
                         LancaPensao()
 
                     }
+                    else if(GrupoDesc13()){
+
+                        LancaDescontos13()
+
+                    }
 
                     if(Aux.AtEOF){
                         break
@@ -852,6 +857,31 @@ LancaLiquidoRecisao(){
 
 }
 
+LancaDescontos13(){
+
+    ;Regra
+    Sleeper(0,70,1)
+    Sleep 20
+    Sleeper(069,70,1)
+    Sleep SleepTime
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(1,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,70,1)
+    Sleep 20
+    Sleeper(11,70,1)
+    Sleep SleepTime
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(4,70,1)
+    Sleep SleepTime
+    
+    Resto()
+
+}
+
 LancaLiquidoFerias(){
 
     ;Regra
@@ -1206,7 +1236,7 @@ LinhaGPSProLabore(Linha) {
 
 ;Verifica em que grupo pertence o lançamento
 GrupoSalario() {
-    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor"
+    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%"
 }
 
 GrupoINSS() {
@@ -1226,7 +1256,7 @@ GrupoSalarioMaternidade() {
 }
 
 GrupoFalta() {
-    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Seguro de Vida" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Abono Pecuniário Mês Anterior" || DC == "1/3 Abono Pecuniário Mês Ant."
+    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Seguro de Vida" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Abono Pecuniário Mês Anterior" || DC == "1/3 Abono Pecuniário Mês Ant." || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)"
 }
 
 GrupoLiquidoRecisao() {
@@ -1242,7 +1272,11 @@ GrupoContribuicao() {
 }
 
 GrupoPensao() {
-    return DC == "Pensão Alimenticia Salário" || DC == "Pensão Alimenticia"
+    return DC == "Pensão Alimenticia Salário" || DC == "Pensão Alimenticia" || DC == "Pensão Sobre Salário Minimo"
+}
+
+GrupoDesc13(){
+    return DC == "Desc. 1ª Parcela 13º Salário"
 }
 
 
@@ -1266,20 +1300,20 @@ GrupoPensao() {
 
         ; Título principal
         myGui.SetFont("Bold s13", "Segoe UI")
-        myGui.Add("Text", "x20 y20 w483 h30 Center BackgroundTrans cf5821f", "Lança FP")
+        myGui.Add("Text", "x32 y16 w424 h21 +Center BackgroundTrans cf5821f", "Lança FP")
 
         ; Lista de seleção
         myGui.SetFont("s10", "Segoe UI")
         myGui.Add("Text", "x26 y80 w120 h20 BackgroundTrans", "Lançamento tipo:")
-        Global DropDownList1 := myGui.Add("DropDownList", "x150 y78 w200 choose1  cBlack", ["Folha Normal", "Pró-Labore", "Autônomos"])
+        Global DropDownList1 := myGui.Add("DropDownList", "x150 y78 w200 Border choose1  cBlack", ["Folha Normal", "Pró-Labore", "Autônomos"])
 
         ; Botões
-        ButtonDefinirCaminhoNFE := myGui.Add("Button", "x26 y150 w220 h40 BackgroundGray", "&Selecionar Arquivo")
-        ButtonLancar := myGui.Add("Button", "x255 y150 w220 h40 BackgroundGray", "&Lançar")
+        ButtonDefinirCaminhoNFE := myGui.Add("Button", "x16 y160 w220 h40 Border BackgroundGray", "&Selecionar Arquivo")
+        ButtonLancar := myGui.Add("Button", "x248 y160 w220 h40 Border BackgroundGray", "&Lançar")
 
         ; Rodapé
         myGui.SetFont("s8", "Segoe UI")
-        myGui.Add("Text", "x20 y210 w483 h20 Center BackgroundTrans cGray", "Desenvolvido por Lucas Malagueta")
+        myGui.Add("Text", "x16 y229 w454 h20 +Center BackgroundTrans cGray", "Desenvolvido por Lucas Malagueta")
 
         ; Eventos dos botões
         ButtonDefinirCaminhoNFE.OnEvent("Click", OnEventDefinir)
@@ -1289,8 +1323,21 @@ GrupoPensao() {
         myGui.OnEvent("Close", (*) => myGui.Destroy())
 
         ; Exibe a GUI
-        myGui.Show("w523 h250")
+        myGui.Show("w484 h250")
 
         Return myGui
     }
 }
+
+; myGui.Add("Text", "x32 y16 w424 h21 +Center", "Lança FP")
+; myGui.Add("Text", "x26 y80 w120 h20", "Lançamento tipo:")
+; DropDownList1 := myGui.Add("DropDownList", "x150 y78 w200", ["Folha Normal", "Pró-Labore", "Autônomos"])
+; ButtonSelecionarArquivo := myGui.Add("Button", "x16 y152 w220 h40", "&Selecionar Arquivo")
+; ButtonLanar := myGui.Add("Button", "x248 y152 w220 h40", "&Lançar")
+; myGui.Add("Text", "x16 y229 w454 h20 +Center", "Desenvolvido por Lucas Malagueta")
+; DropDownList1.OnEvent("Change", OnEventHandler)
+; ButtonSelecionarArquivo.OnEvent("Click", OnEventHandler)
+; ButtonLanar.OnEvent("Click", OnEventHandler)
+; myGui.OnEvent('Close', (*) => ExitApp())
+; myGui.Title := "Lança FP (Clone)"
+; myGui.Show("w484 h250")
