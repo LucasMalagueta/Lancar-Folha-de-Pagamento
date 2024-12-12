@@ -8,6 +8,7 @@ TraySetIcon("C:\Users\" A_Username "\Documents\AutoHotkey\Lib\pngwing.com.ico")
 
 Global SleepTime := 100
 Global dia := 0
+GLobal MORIELET := "NULL"
 
 
 OnEventDefinir(*){
