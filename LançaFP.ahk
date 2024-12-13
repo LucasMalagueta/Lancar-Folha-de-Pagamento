@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2
+#Requires AutoHotkey v2
 #SingleInstance Force
 #Include <FindTextV2>
 #Include <matFunctionsV2>
@@ -8,7 +8,6 @@ TraySetIcon("C:\Users\" A_Username "\Documents\AutoHotkey\Lib\pngwing.com.ico")
 
 Global SleepTime := 100
 Global dia := 0
-GLobal MORIELET := "NULL"
 
 
 OnEventDefinir(*){
@@ -49,7 +48,7 @@ OnEventLancar(*){
 
 
         Global T := true
-        Global Aux := FileOpen("DOC/Proventos&Descontos.txt", "r")
+        Global Aux := FileOpen(A_Desktop "\Lança FP\DOC\Proventos&Descontos.txt", "r")
         WinActivate("SAN - Contabilidade")
 
         If WinActive("SAN - Contabilidade"){
@@ -155,6 +154,11 @@ OnEventLancar(*){
                         LancaDescontos13()
 
                     }
+                    else if(GrupoSeguroDeVida()){
+
+                        LancaSeguroDeVida()
+
+                    }
 
                     if(Aux.AtEOF){
                         break
@@ -170,7 +174,7 @@ OnEventLancar(*){
     else if(DropDownList1.text == "Pró-Labore"){
         Global Descontos := 0
         Global Auxiliar := 0
-        Global Aux := FileOpen("DOC/ProLaboreSócios.txt", "r")
+        Global Aux := FileOpen(A_Desktop "\Lança FP\DOC\ProLaboreSócios.txt", "r")
         WinActivate("SAN - Contabilidade")
 
         If WinActive("SAN - Contabilidade"){
@@ -241,7 +245,7 @@ OnEventLancar(*){
     else if(DropDownList1.text == "Autônomos"){
         Global Descontos := 0
         Global Auxiliar := 0
-        Global Aux := FileOpen("DOC/Autonomos.txt", "r")
+        Global Aux := FileOpen(A_Desktop "\Lança FP\DOC\Autonomos.txt", "r")
         WinActivate("SAN - Contabilidade")
 
         If WinActive("SAN - Contabilidade"){
@@ -312,16 +316,17 @@ OnEventLancar(*){
 }
 
 GetNomeEmpresa(arq){
-
-    Aux := FileOpen(arq,"r")
+    Aux := FileOpen(arq ,"r")
     while(!(Aux.AtEOF)){
         Linha := Aux.ReadLine()
 
-        if(RegExMatch(Linha, "\|\sApelido:\s+\w+\s+Razao Social:\s+[^Pag]+Pag:1\|", &match)){
+        if(RegExMatch(Linha, "\|\sApelido:\s+\w+\s+Razao Social:\s+(?!(Pag:)).+1\|", &match)){
 
-            Global NomeEmpresa := RegExFindValue(Linha,"\|\sApelido:\s+([\w]+)\s+Razao Social:\s+[^Pag]+Pag:1\|")
+            Global NomeEmpresa := RegExFindValue(Linha,"\|\sApelido:\s+(\w+)\s+Razao Social:\s+(?!(Pag:)).+1\|")
+            break
         }
     }
+    Aux.Close()
 }
 
 
@@ -334,9 +339,12 @@ ExtraiFP(arq) {
         if (LinhaProventosDescontos(Linha)) {
             Break
         }
-
+        
     }
-    Aux2 := FileOpen("DOC/Proventos&Descontos.txt", "w", "CP1252")
+
+    
+
+    Aux2 := FileOpen(A_Desktop "/Lança FP/DOC/Proventos&Descontos.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -369,7 +377,7 @@ ExtraiFGTS(arq) {
         }
 
     }
-    Aux2 := FileOpen("DOC/FGTSMensal.txt", "w", "CP1252")
+    Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\FGTSMensal.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -390,7 +398,7 @@ ExtraiFGTS(arq) {
 ;Extrai a linha a partir do GPS
 ExtraiGPS(arq) {
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("DOC/GPSNormal.txt", "w", "CP1252")
+    Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\GPSNormal.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -410,7 +418,7 @@ ExtraiGPS(arq) {
 ExtraiProLabore(arq) {
     ;Nome;Salário Liquido;Desconto
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("DOC/ProLaboreSócios.txt", "w", "CP1252")
+    Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\ProLaboreSócios.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -433,7 +441,7 @@ ExtraiProLabore(arq) {
 
     ;GPS
     Cor := FileOpen(arq, "r")
-    Cor2 := FileOpen("DOC/ProLaboreGPS.txt", "w", "CP1252")
+    Cor2 := FileOpen(A_Desktop "\Lança FP\DOC\ProLaboreGPS.txt", "w", "CP1252")
 
     while (!(Cor.AtEOF)) {
         Linha := Cor.ReadLine()
@@ -452,7 +460,7 @@ ExtraiProLabore(arq) {
 ExtraiAutonomo(arq) {
     ;Nome;Salário Liquido;Desconto
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("DOC/Autonomos.txt", "w", "CP1252")
+    Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\Autonomos.txt", "w", "CP1252")
 
 
     while (!(Aux.AtEOF)) {
@@ -475,7 +483,7 @@ ExtraiAutonomo(arq) {
 
     ;GPS
     Aux := FileOpen(arq, "r")
-    Aux2 := FileOpen("DOC/AutonomosGPS.txt", "w", "CP1252")
+    Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\AutonomosGPS.txt", "w", "CP1252")
 
     while (!(Aux.AtEOF)) {
         Linha := Aux.ReadLine()
@@ -573,7 +581,7 @@ GetProLabore(Aux){
 
 GetProLaboreGPS(){
     ;GPS Pro Labore
-    Aux := FileOpen("DOC/ProLaboreGPS.txt", "r")
+    Aux := FileOpen(A_Desktop "\Lança FP\DOC\ProLaboreGPS.txt", "r")
     if (!Aux.AtEOF) {
         Linha := Aux.ReadLine()
         Global DC := "INSS"
@@ -609,7 +617,7 @@ GetAutonomo(Aux){
 
 GetAutonomoGPS(){
     ;GPS Pro Labore
-    Aux := FileOpen("DOC/AutonomosGPS.txt", "r")
+    Aux := FileOpen(A_Desktop "\Lança FP\DOC\AutonomosGPS.txt", "r")
     if (!Aux.AtEOF) {
         Linha := Aux.ReadLine()
         Global DC := "INSS S/AUTONOMO"
@@ -622,7 +630,7 @@ GetAutonomoGPS(){
 
 ;Lançamentos
 LancaFGTS(){
-    Global Aux := FileOpen("DOC/FGTSMensal.txt", "r")
+    Global Aux := FileOpen(A_Desktop "\Lança FP\DOC\FGTSMensal.txt", "r")
     GetFGTS(Aux)
         
     LancarFGTS()
@@ -631,7 +639,7 @@ LancaFGTS(){
 }
 
 LancaGPS(){
-    Global Aux := FileOpen("DOC/GPSNormal.txt", "r")
+    Global Aux := FileOpen(A_Desktop "\Lança FP\DOC\GPSNormal.txt", "r")
     Aux.ReadLine()
     while(true){
 
@@ -948,8 +956,10 @@ LancaPensao(){
     Sleep SleepTime
     Sleeper(0,40,4)
     Sleep SleepTime
-    if(NomeEmpresa == "MORIELET"){
+    if(NomeEmpresa == "MORIELET"){ ;Extraia os aqruivos denovo.
         Sleeper(6,70,1)
+    }else if(NomeEmpresa == "PC"){
+        Sleeper(2,70,1)
     }else{
         Sleeper(5,70,1)
     }
@@ -1058,6 +1068,7 @@ LancaDescontos(){
     Resto()
 
 }
+
 LancaDescontosAutonomo(){
 
     ;Regra
@@ -1076,6 +1087,29 @@ LancaDescontosAutonomo(){
     Sleeper(0,40,4)
     Sleep 20
     Sleeper(1,70,1)
+    Sleep SleepTime
+
+    
+    Resto()
+
+}
+
+LancaSeguroDeVida(){
+
+    ;Regra
+    Sleeper(0,70,1)
+    Sleep 20
+    Sleeper(069,70,1)
+    Sleep SleepTime
+    Sleeper(0,40,4)
+    Sleep SleepTime
+    Sleeper(1,70,1)
+    Sleep SleepTime
+    Sleeper(139,70,1)
+    Sleep SleepTime
+    Sleeper(0,40,3)
+    Sleep SleepTime
+    Sleeper(23,70,1)
     Sleep SleepTime
 
     
@@ -1257,7 +1291,7 @@ GrupoSalarioMaternidade() {
 }
 
 GrupoFalta() {
-    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Seguro de Vida" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Abono Pecuniário Mês Anterior" || DC == "1/3 Abono Pecuniário Mês Ant." || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)"
+    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Abono Pecuniário Mês Anterior" || DC == "1/3 Abono Pecuniário Mês Ant." || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)"
 }
 
 GrupoLiquidoRecisao() {
@@ -1278,6 +1312,10 @@ GrupoPensao() {
 
 GrupoDesc13(){
     return DC == "Desc. 1ª Parcela 13º Salário"
+}
+
+GrupoSeguroDeVida(){
+    return DC == "Seguro de Vida"
 }
 
 
