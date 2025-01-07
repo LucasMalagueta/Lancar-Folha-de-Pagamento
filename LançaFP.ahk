@@ -324,6 +324,8 @@ GetNomeEmpresa(arq){
 
             Global NomeEmpresa := RegExFindValue(Linha,"\|\sApelido:\s+(\w+)\s+Razao Social:\s+(?!(Pag:)).+1\|")
             break
+        }else{
+            Global NomeEmpresa := "Nenhuma"
         }
     }
     Aux.Close()
