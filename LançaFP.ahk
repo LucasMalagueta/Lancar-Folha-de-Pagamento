@@ -10,6 +10,9 @@ Global SleepTime := 100
 Global dia := 0
 
 
+
+
+;Definição de cada arquivo, o usuario escolhe a quantidade que quiser e a ordem também
 OnEventDefinir(*){
 
     Global SelectedFiles := FileSelect("M1", "", "Selecione um arquivo", "TXT (*.txt)")
@@ -23,24 +26,24 @@ OnEventDefinir(*){
     for file in SelectedFiles {
 
         if(RegExMatch(file,"(Folha de Pagamento -Normal).+\.txt",&match)){
-            GetNomeEmpresa(file)
+            ExtraiNomeEmpresa(file)
             ExtraiFP(file)
             ExtraiFGTS(file)
             ExtraiGPS(file)
             continue
         }
         if(RegExMatch(file,"(Folha de Pro Labore).+\.txt",&match)){
-            GetNomeEmpresa(file)
+            ExtraiNomeEmpresa(file)
             ExtraiProLabore(file)
             continue
         }
         if(RegExMatch(file,"(Folha de Autonomo).+\.txt",&match)){
-            GetNomeEmpresa(file)
+            ExtraiNomeEmpresa(file)
             ExtraiAutonomo(file)
             continue
         }
         if(RegExMatch(file,"(Folha de 13º Salário).+\.txt",&match)){
-            GetNomeEmpresa(file)
+            ExtraiNomeEmpresa(file)
             Extrai13(file)
             continue
         }
@@ -48,6 +51,12 @@ OnEventDefinir(*){
 }
 
 
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+;Lançamentos separados por regras de cada arquivo
 OnEventLancar(*){
 
 
@@ -373,24 +382,15 @@ OnEventLancar(*){
     }
 }
 
-GetNomeEmpresa(arq){
-    Aux := FileOpen(arq ,"r")
-    while(!(Aux.AtEOF)){
-        Linha := Aux.ReadLine()
-
-        if(RegExMatch(Linha, "\|\sApelido:\s+\w+\s+Razao Social:\s+(?!(Pag:)).+1\|", &match)){
-
-            Global NomeEmpresa := RegExFindValue(Linha,"\|\sApelido:\s+(\w+)\s+Razao Social:\s+(?!(Pag:)).+1\|")
-            break
-        }else{
-            Global NomeEmpresa := "Nenhuma"
-        }
-    }
-    Aux.Close()
-}
 
 
-;Extrai a linha a partir da linha Proventos & Descontos
+;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+;Extração das folhas com informações brutas
+
+;Extrai informações da folha normal de pagamentos
 ExtraiFP(arq) {
     Aux := FileOpen(arq, "r")
     while (!(Aux.AtEOF)) {
@@ -402,10 +402,7 @@ ExtraiFP(arq) {
         
     }
 
-    
-
     Aux2 := FileOpen(A_Desktop "/Lança FP/DOC/Proventos&Descontos.txt", "w", "CP1252")
-
 
     while (!(Aux.AtEOF)) {
         Linha := Aux.ReadLine()
@@ -439,7 +436,6 @@ ExtraiFGTS(arq) {
     }
     Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\FGTSMensal.txt", "w", "CP1252")
 
-
     while (!(Aux.AtEOF)) {
         Linha := Aux.ReadLine()
         pipe := StrSplit(Linha, "|")
@@ -472,7 +468,6 @@ ExtraiGPS(arq) {
     Aux2.Close()
 
 }
-
 
 ;Pro Labore
 ExtraiProLabore(arq) {
@@ -517,6 +512,7 @@ ExtraiProLabore(arq) {
 
 }
 
+;Extrai o nome do autonomo responsável pela empresa em questão
 ExtraiAutonomo(arq) {
     ;Nome;Salário Liquido;Desconto
     Aux := FileOpen(arq, "r")
@@ -560,6 +556,7 @@ ExtraiAutonomo(arq) {
 
 }
 
+;Extrai Folha do 13° Salário
 Extrai13(arq){
     Aux := FileOpen(arq, "r")
     Aux2 := FileOpen(A_Desktop "\Lança FP\DOC\DécimoTerceiro.txt", "w", "CP1252")
@@ -583,9 +580,29 @@ Extrai13(arq){
     Aux2.Close()
 }
 
+ExtraiNomeEmpresa(arq){
+    Aux := FileOpen(arq ,"r")
+    while(!(Aux.AtEOF)){
+        Linha := Aux.ReadLine()
+
+        if(RegExMatch(Linha, "\|\sApelido:\s+\w+\s+Razao Social:\s+(?!(Pag:)).+1\|", &match)){
+
+            Global NomeEmpresa := RegExFindValue(Linha,"\|\sApelido:\s+(\w+)\s+Razao Social:\s+(?!(Pag:)).+1\|")
+            break
+        }else{
+            Global NomeEmpresa := "Nenhuma"
+        }
+    }
+    Aux.Close()
+}
 
 
-;Extrai os valores necessarios
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+;Extrai os valores necessarios dos arquivos .txt já certos
 Get(Aux) {
     if (!Aux.AtEOF) {
         Linha := Aux.ReadLine()
@@ -614,9 +631,6 @@ GetFGTS(Aux) {
                 Global VL := pontoNada(VL)
             }
         }
-    } else if(Aux.AtEOF){
-        MsgBox "TODOS OS LANÇAMENTOS DO FGTS MENSAL FORAM FEITOS.", "Aviso", 48
-        
     }
     Aux.Close()
 }
@@ -630,8 +644,6 @@ GetGPS(Aux) {
             Global VL := pontoNada(VL)
 
         }
-    } else if(Aux.AtEOF){
-        MsgBox "TODOS OS LANÇAMENTOS DO INSS FORAM FEITOS.", "Aviso", 48
     }
     Aux.Close()
 }
@@ -654,8 +666,6 @@ GetProLabore(Aux){
         Global Descontos += Auxiliar + 0
 
         
-    } else if(Aux.AtEOF){
-        MsgBox "TODOS OS LANÇAMENTOS RESPECTIVOS FORAM FEITOS.", "Aviso", 48
     }
     Aux.Close()
 }
@@ -689,9 +699,6 @@ GetAutonomo(Aux){
         Global Descontos += Auxiliar + 0
 
         
-    } else if(Aux.AtEOF){
-        MsgBox "TODOS OS LANÇAMENTOS RESPECTIVOS FORAM FEITOS.", "Aviso", 48
-        
     }
     Aux.Close()
 }
@@ -722,11 +729,14 @@ Get13(Aux){
         Global VL := pipe[3]
         Global VL := pontoNada(VL)
         
-    } else if(Aux.AtEOF){
-        MsgBox "TODOS OS LANÇAMENTOS RESPECTIVOS FORAM FEITOS.", "Aviso", 48
     }
     Aux.Close()
 }
+
+
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 ;Lançamentos
@@ -1073,8 +1083,8 @@ LancaPensao(){
     Resto()
 
 }
-;Lançamentos Pro Labore
 
+;Lançamentos Pro Labore
 LancaAutonomo(){
     ;Regra
     Sleeper(139,70,1)
@@ -1123,7 +1133,6 @@ LancaAutonomo(){
     Sleep SleepTime
     Sleeper("{Tab}",70,1)
 }
-
 
 ;Lançamentos Pro Labore
 LancaGPSProLabore(){
@@ -1322,37 +1331,6 @@ LancaDecimo(){
 }
 
 
-;Ultimo dia correto para o mês referente
-GetDia(mes){
-    switch(mes){
-        case 01:
-            Global dia := 31
-        case 02:
-            Global dia := 28
-        case 03:
-            Global dia := 31
-        case 04:
-            Global dia := 30
-        case 05:
-            Global dia := 31
-        case 06:
-            Global dia := 30
-        case 07:
-            Global dia := 31
-        case 08:
-            Global dia := 31
-        case 09:
-            Global dia := 30
-        case 10:
-            Global dia := 31
-        case 11:
-            Global dia := 30
-        case 12:
-            Global dia := 31
-    }
-}
-
-
 ;Resto do Lançamento
 Resto(){
 
@@ -1385,6 +1363,48 @@ Resto(){
     Sleeper("{Tab}",70,1)
 
 }
+
+
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+;Ultimo dia correto para o mês referente
+GetDia(mes){
+    switch(mes){
+        case 01:
+            Global dia := 31
+        case 02:
+            Global dia := 28
+        case 03:
+            Global dia := 31
+        case 04:
+            Global dia := 30
+        case 05:
+            Global dia := 31
+        case 06:
+            Global dia := 30
+        case 07:
+            Global dia := 31
+        case 08:
+            Global dia := 31
+        case 09:
+            Global dia := 30
+        case 10:
+            Global dia := 31
+        case 11:
+            Global dia := 30
+        case 12:
+            Global dia := 31
+    }
+}
+
+
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 ;Da match com a linha que começa com uma data, quando os dias trocam
 LinhaProventosDescontos(Linha) {
@@ -1429,6 +1449,9 @@ LinhaFGTS13(linha){
     return RegExMatch(Linha, "\|\sBase\s[FGTS.:]+\s+[\d.,]+\s[FGTS.:]+\s+[\d.,]+\s+[\w+.:]+\s+[\d.,]+\s+\|", &match) 
 }
 
+
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -1481,6 +1504,8 @@ GrupoSeguroDeVida(){
 }
 
 
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
