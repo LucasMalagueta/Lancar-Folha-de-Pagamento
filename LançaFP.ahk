@@ -746,9 +746,13 @@ LancarFGTS(){
 
     Sleeper(0,40,3)
     Sleep 20
-    Sleeper(51,70,1)
+    if(NomeEmpresa == "FUNDACAO"){
+        Sleeper(0,70,1)
+        Sleeper(2,70,1)
+    }else{
+        Sleeper(51,70,1)
+    }
     Sleep SleepTime
-
     
     Resto()
 }
@@ -1273,7 +1277,7 @@ LinhaGPSProLabore(Linha) {
 
 ;Verifica em que grupo pertence o lançamento
 GrupoSalario() {
-    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%" || DC == "Abono Pecuniário" || DC == "1/3 Abono Pecuniário"
+    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%" || DC == "Abono Pecuniário" || DC == "1/3 Abono Pecuniário" || DC == "Hora Atividade"
 }
 GrupoINSS() {
     return DC == "INSS Sobre Salário" || DC == "IRRF Sobre Salário" || DC == "INSS Sobre Salário (Rescisão)" || DC == "INSS Sobre 13º Sal. (Rescisão)" || DC == "IRRF Descontado nas Férias" || DC == "INSS Férias Mês -Recibo" || DC == "INSS Férias Mês Anterior"
