@@ -422,6 +422,7 @@ ExtraiFP(arq) {
 
 }
 
+
 ;Extrai a linha a partir do FGTS Mensal
 ExtraiFGTS(arq) {
     Aux := FileOpen(arq, "r")
@@ -567,6 +568,7 @@ Extrai13(arq){
 
         if(RegExMatch(Linha, "\|\sFolha de Pagamento - 13º Salário [\w(ª]+ \w+[)]\s+[\d\/]+\s+[\d:]+  \|", &match) and Flag == 0){
             Aux2.Write(RegExFindValue(Linha, "\|\sFolha de Pagamento - 13º Salário \(([\wª]+ \w+)\)\s+[\d\/]+\s+[\d:]+\s+\|") ";")
+            Parcela := RegExFindValue(Linha, "\|\sFolha de Pagamento - 13º Salário \(([\wª]+ \w+)\)\s+[\d\/]+\s+[\d:]+\s+\|")
             Flag := 1
         }
         else if (Linha13(Linha)) {
@@ -576,8 +578,48 @@ Extrai13(arq){
             Aux2.Write(RegExFindValue(Linha, "\|\sBase\s[FGTS.:]+\s+[\d.,]+\s[FGTS.:]+\s+([\d.,]+)\s+[\w+.:]+\s+[\d.,]+\s+\|"))
         }
     }
+
     Aux.Close()
     Aux2.Close()
+
+    if(Parcela == "2ª Parcela"){
+
+        Aux := FileOpen(arq, "r")
+        while (!(Aux.AtEOF)) {
+            Linha := Aux.ReadLine()
+
+            if (LinhaProventosDescontos(Linha)) {
+                Break
+            }
+            
+        }
+
+        Aux2 := FileOpen(A_Desktop "/Lança FP/DOC/DécimoTerc.Prov&Descontos.txt", "w", "CP1252")
+        Aux3 := FileOpen(A_Desktop "/Lança FP/DOC/DécimoTerc.GPSEmpresa.txt", "w", "CP1252")
+
+        while (!(Aux.AtEOF)) {
+            Linha := Aux.ReadLine()
+            pipe := StrSplit(Linha, "|")
+
+            if (LinhaValida(Linha)) {
+                if(pipe[2] != "                                                              "){
+                    Aux2.WriteLine(pipe[2])
+                }
+                if(pipe[3] != "                                                             "){
+                    Aux2.WriteLine(pipe[3])
+                }
+            }else{
+
+                if (LinhaGPSProLabore(Linha)) {
+                    Aux3.WriteLine(RegExFindValue(Linha, "\|\sCod.\s\d+\s+Empresa\s+([\d.,]+)\s+"))
+
+                    break
+                }
+            }
+        }
+        Aux.Close()
+        Aux2.Close()
+    }
 }
 
 ExtraiNomeEmpresa(arq){
@@ -729,6 +771,8 @@ Get13(Aux){
         Global VL := pipe[3]
         Global VL := pontoNada(VL)
         
+        if(Parcela == "2ª Parcela"){
+        }
     }
     Aux.Close()
 }
@@ -1457,10 +1501,10 @@ LinhaFGTS13(linha){
 
 ;Verifica em que grupo pertence o lançamento
 GrupoSalario() {
-    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%" || DC == "Abono Pecuniário" || DC == "1/3 Abono Pecuniário" || DC == "Hora Atividade"
+    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%" || DC == "Abono Pecuniário" || DC == "1/3 Abono Pecuniário" || DC == "Hora Atividade" || DC == "1/3 Abono Pecuniário Mês Ant."  || DC == "Abono Pecuniário Mês Anterior"
 }
 GrupoINSS() {
-    return DC == "INSS Sobre Salário" || DC == "IRRF Sobre Salário" || DC == "INSS Sobre Salário (Rescisão)" || DC == "INSS Sobre 13º Sal. (Rescisão)" || DC == "IRRF Descontado nas Férias" || DC == "INSS Férias Mês -Recibo" || DC == "INSS Férias Mês Anterior"
+    return DC == "INSS Sobre Salário" || DC == "IRRF Sobre Salário" || DC == "INSS Sobre Salário (Rescisão)" || DC == "INSS Sobre 13º Sal. (Rescisão)" || DC == "IRRF Descontado nas Férias" || DC == "INSS Férias Mês -Recibo" || DC == "INSS Férias Mês Anterior" || DC == "IRRF Sobre 13º Salário" || DC == "INSS Sobre 13º. Salário"
 }
 
 GrupoFerias() {
@@ -1468,7 +1512,7 @@ GrupoFerias() {
 }
 
 Grupo13() {
-    return DC == "13º Salário Proporcional" || DC == "13º Salário Indenizado" || DC == "13º Sal Proporc Maternidade" || DC == "13º Indenizado Lei 12.506/11"
+    return DC == "13º Salário Proporcional" || DC == "13º Salário Indenizado" || DC == "13º Sal Proporc Maternidade" || DC == "13º Indenizado Lei 12.506/11" || DC == "13º Salário 2ª Parcela"
 }
 
 GrupoSalarioMaternidade() {
@@ -1476,7 +1520,7 @@ GrupoSalarioMaternidade() {
 }
 
 GrupoFalta() {
-    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Abono Pecuniário Mês Anterior" || DC == "1/3 Abono Pecuniário Mês Ant." || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)"
+    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)"
 }
 
 GrupoLiquidoRecisao() {
