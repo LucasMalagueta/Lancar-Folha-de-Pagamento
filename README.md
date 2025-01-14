@@ -1,4 +1,5 @@
-1° Passo, abrir o App Folha De Pagamento (FP)
+**1° Passo, abrir o App Folha De Pagamento (FP)**
+
 ![FP](Imagens/1.png)
 
 2° Passo, com o FP aberto, é necessario selecionar o tipo do relatório em “Material Turbo – NotePad”
