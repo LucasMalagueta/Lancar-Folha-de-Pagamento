@@ -1508,7 +1508,7 @@ GrupoINSS() {
 }
 
 GrupoFerias() {
-    return DC == "Férias Vencidas (Aqs1)" || DC == "Férias Proporcionais" || DC == "1/3 de Férias Indenizadas" || DC == "Férias Proporc. Indenizadas" || DC == "1/3 Férias Propor Indenizadas" || DC == "Férias No Mês" || DC == "1/3 de Férias no Mês" || DC == "Diferença de Ferias"
+    return  DC == "Férias Pagas Mês Anterior" || DC == "Férias Vencidas (Aqs1)" || DC == "Férias Proporcionais" || DC == "1/3 de Férias Indenizadas" || DC == "Férias Proporc. Indenizadas" || DC == "1/3 Férias Propor Indenizadas" || DC == "Férias No Mês" || DC == "1/3 de Férias no Mês" || DC == "Diferença de Ferias"
 }
 
 Grupo13() {
@@ -1528,7 +1528,7 @@ GrupoLiquidoRecisao() {
 }
 
 GrupoLiquidoFerias() {
-    return DC == "Liquido de Férias" || DC == "Férias Pagas Mês Anterior" || DC == "Liquido Férias Mês Anterior" || DC == "1/3 Ferias Pagas Mês Anterior"
+    return DC == "Liquido de Férias" || DC == "Liquido Férias Mês Anterior" || DC == "1/3 Ferias Pagas Mês Anterior"
 }
 
 GrupoContribuicao() {
