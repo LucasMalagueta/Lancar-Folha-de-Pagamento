@@ -1119,6 +1119,8 @@ LancaPensao(){
         Sleeper(6,70,1)
     }else if(NomeEmpresa == "PC"){
         Sleeper(2,70,1)
+    }else if(NomeEmpresa == "VLCOLNAG"){
+        Sleeper(3,70,1)
     }else{
         Sleeper(5,70,1)
     }
