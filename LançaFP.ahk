@@ -1,4 +1,4 @@
-#Requires AutoHotkey v2
+ #Requires AutoHotkey v2
 #SingleInstance Force
 #Include <FindTextV2>
 #Include <matFunctionsV2>
@@ -1144,7 +1144,7 @@ LancaPensao(){
     Sleep SleepTime
     Sleeper(0,40,4)
     Sleep SleepTime
-    if(NomeEmpresa == "MORIELET"){ ;Extraia os aqruivos denovo.
+    if(NomeEmpresa == "MORIELET" or NomeEmpresa == "CONALSUP"){ ;Extraia os aqruivos denovo.
         Sleeper(6,70,1)
     }else if(NomeEmpresa == "PC"){
         Sleeper(2,70,1)
