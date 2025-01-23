@@ -377,12 +377,103 @@ OnEventLancar(*){
 
             Sleep 175
             Send dia
-
             Get13(Aux)
+            if(Parcela == "1ª Parcela"){
+                LancaDecimo()
+                Global DC := "FGTS S/13° Salário " Parcela
+                LancarFGTS()
+            }else if(Parcela == "2ª Parcela"){
+                Global DC := "FGTS S/13° Salário " Parcela
+                LancarFGTS()
+                Sleep 80
+                Global Aux := FileOpen(A_Desktop "\Lança FP\DOC\DécimoTerc.Prov&Descontos.txt", "r")
+                GetProv13(Aux)
+                while(true){
+                    If WinExist("SAN - Contabilidade"){
+    
+                        WinActive "Lançamentos Contábeis"
+    
+                        if(GrupoSalario()){
+    
+                            LancaSalario()
+    
+                        }
+                        else if(GrupoINSS()){
+    
+                            LancaINSS()
+    
+                        }
+                        else if(GrupoFerias()){
+    
+                            LancaFerias()
+                        }
+                        else if(Grupo13()){
+    
+                            Lanca13()
+    
+                        }
+                        else if(GrupoSalarioMaternidade()){
+    
+                            LancaMaternidade()
+    
+                        }
+                        else if(GrupoFalta()){
+    
+                            LancaFalta()
+    
+                        }
+                        else if(GrupoLiquidoRecisao()){
+    
+                            LancaLiquidoRecisao()
+    
+                        }
+                        else if(GrupoLiquidoFerias()){
+    
+                            LancaLiquidoFerias()
+    
+                        }
+                        else if(GrupoContribuicao()){
+    
+                            LancaContribuicao()
+    
+                        }
+                        else if(GrupoPensao()){
+    
+                            LancaPensao()
+    
+                        }
+                        else if(GrupoDesc13()){
+    
+                            LancaDescontos13()
+    
+                        }
+                        else if(GrupoSeguroDeVida()){
+    
+                            LancaSeguroDeVida()
+    
+                        }
+                        else if(GrupoContribuicaoNeg()){
+    
+                            LancaContribuicaoNeg()
+    
+                        }
+    
+                        if(Aux.AtEOF){
+                            break
+                        }
+    
+                        GetProv13(Aux)
+                    }
+                }
 
-            LancaDecimo()
-            Global DC := "FGTS S/13° Salário " Parcela
-            LancarFGTS()
+                Aux := FileOpen(A_Desktop "/Lança FP/DOC/DécimoTerc.GPSEmpresa.txt", "r", "CP1252")
+                Global VL := Aux.ReadLine()
+                Global VL := pontoNada(VL)
+                Global DC := "FGTS Empresa S/13° Salário " Parcela
+
+                LancarGPS()
+            }
+            
         }
     }
 }
@@ -573,7 +664,7 @@ Extrai13(arq){
 
         if(RegExMatch(Linha, "\|\sFolha de Pagamento - 13º Salário [\w(ª]+ \w+[)]\s+[\d\/]+\s+[\d:]+  \|", &match) and Flag == 0){
             Aux2.Write(RegExFindValue(Linha, "\|\sFolha de Pagamento - 13º Salário \(([\wª]+ \w+)\)\s+[\d\/]+\s+[\d:]+\s+\|") ";")
-            Parcela := RegExFindValue(Linha, "\|\sFolha de Pagamento - 13º Salário \(([\wª]+ \w+)\)\s+[\d\/]+\s+[\d:]+\s+\|")
+            GLobal Parcela := RegExFindValue(Linha, "\|\sFolha de Pagamento - 13º Salário \(([\wª]+ \w+)\)\s+[\d\/]+\s+[\d:]+\s+\|")
             Flag := 1
         }
         else if (Linha13(Linha)) {
@@ -776,12 +867,25 @@ Get13(Aux){
         Global VL := pipe[3]
         Global VL := pontoNada(VL)
         
-        if(Parcela == "2ª Parcela"){
-        }
     }
     Aux.Close()
 }
 
+
+GetProv13(Aux) {
+    if (!Aux.AtEOF) {
+        Linha := Aux.ReadLine()
+        if (Linha != "") { ; Verifica se a linha foi lida corretamente
+            Global DC := RegExFindValue(Linha, "^\s+\d+\s([\wÀ-ÿ()º\.\/%\- ª]+?)(?=\s{3})")
+            Global VL := RegExFindValue(Linha, "\s+([.,\d]+)\s$")
+            Global VL := pontoNada(VL)
+            if(VL == 0,00){
+                GetProv13(Aux)
+            }
+        }
+    }
+    Aux.Close()
+}
 
 
 ;------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -914,6 +1018,7 @@ LancarFGTS(){
     
     Resto()
 }
+
 
 LancaFerias(){
 
