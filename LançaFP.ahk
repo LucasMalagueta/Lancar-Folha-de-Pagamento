@@ -179,6 +179,11 @@ OnEventLancar(*){
                         LancaContribuicaoNeg()
 
                     }
+                    else if(Grupo13LiquidoFerias()){
+
+                        Lanca13LiquidoFerias()
+
+                    }
 
                     if(Aux.AtEOF){
                         break
@@ -455,6 +460,11 @@ OnEventLancar(*){
                         else if(GrupoContribuicaoNeg()){
     
                             LancaContribuicaoNeg()
+    
+                        }
+                        else if(Grupo13LiquidoFerias()){
+
+                            Lanca13LiquidoFerias()
     
                         }
     
@@ -938,8 +948,6 @@ LancaSalario(){
 
     
     Resto()
-    
-
 }
 
 LancaINSS(){
@@ -963,7 +971,6 @@ LancaINSS(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancarGPS(){
@@ -988,7 +995,6 @@ LancarGPS(){
 
     
     Resto()
-    
 }
 
 LancarFGTS(){
@@ -1039,7 +1045,6 @@ LancaFerias(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 Lanca13(){
@@ -1061,7 +1066,6 @@ Lanca13(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaMaternidade(){
@@ -1085,7 +1089,6 @@ LancaMaternidade(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaFalta(){
@@ -1107,7 +1110,6 @@ LancaFalta(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaLiquidoRecisao(){
@@ -1132,7 +1134,6 @@ LancaLiquidoRecisao(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaDescontos13(){
@@ -1157,7 +1158,6 @@ LancaDescontos13(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaLiquidoFerias(){
@@ -1181,7 +1181,6 @@ LancaLiquidoFerias(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaContribuicao(){
@@ -1205,7 +1204,6 @@ LancaContribuicao(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaContribuicaoNeg(){
@@ -1229,7 +1227,6 @@ LancaContribuicaoNeg(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 LancaPensao(){
@@ -1261,7 +1258,6 @@ LancaPensao(){
     Sleep SleepTime
     
     Resto()
-
 }
 
 ;Lançamentos Pro Labore
@@ -1360,7 +1356,6 @@ LancaDescontos(){
 
     
     Resto()
-
 }
 
 LancaDescontosAutonomo(){
@@ -1385,7 +1380,6 @@ LancaDescontosAutonomo(){
 
     
     Resto()
-
 }
 
 LancaSeguroDeVida(){
@@ -1408,8 +1402,33 @@ LancaSeguroDeVida(){
 
     
     Resto()
-
 }
+
+Lanca13LiquidoFerias(){
+
+    ;Regra
+    Sleeper(139,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,40,3)
+    Sleep 20
+    Sleeper(14,70,1)
+    Sleep 20
+    Sleeper(0,70,1)
+    Sleep SleepTime
+    Sleeper(069,70,1)
+    Sleep SleepTime
+
+    Sleeper(0,40,4)
+    Sleep 20
+    Sleeper(1,70,1)
+    Sleep SleepTime
+
+    Resto()
+}
+
+
+
 
 LancaProLabore(){
 
@@ -1664,7 +1683,11 @@ GrupoLiquidoRecisao() {
 }
 
 GrupoLiquidoFerias() {
-    return DC == "Liquido de Férias" || DC == "Liquido Férias Mês Anterior" || DC == "1/3 Ferias Pagas Mês Anterior"
+    return DC == "Liquido de Férias" || DC == "Liquido Férias Mês Anterior"
+}
+
+Grupo13LiquidoFerias(){
+    return DC == "1/3 Ferias Pagas Mês Anterior"
 }
 
 GrupoContribuicao() {
