@@ -258,12 +258,13 @@ OnEventLancar(*){
                 GetProLabore(Aux)
 
             }
-            GetProLaboreGPS()
-            LancaGPSProLabore()
 
             Global VL := PontoVirgula(Descontos)
             Global DC := "INSS S/PRO-LABORE"
             LancaDescontos()
+
+            GetProLaboreGPS()
+            LancaGPSProLabore()
 
         }
     }
@@ -812,7 +813,6 @@ GetProLabore(Aux){
         Global Auxiliar := pontoNada(Auxiliar)
         Global Auxiliar := VirgulaPonto(Auxiliar)
         Global Descontos += Auxiliar + 0
-
         
     }
     Aux.Close()
