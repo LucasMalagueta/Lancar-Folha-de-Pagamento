@@ -8,6 +8,9 @@ TraySetIcon("C:\Users\" A_Username "\Documents\AutoHotkey\Lib\pngwing.com.ico")
 
 Global SleepTime := 100
 Global dia := 0
+Global DC := ""
+Global VL := 0
+Global NomeEmpresa := ""
 
 
 
@@ -1656,7 +1659,7 @@ LinhaFGTS13(linha){
 
 ;Verifica em que grupo pertence o lançamento
 GrupoSalario() {
-    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%" || DC == "Abono Pecuniário" || DC == "1/3 Abono Pecuniário" || DC == "Hora Atividade" || DC == "1/3 Abono Pecuniário Mês Ant."  || DC == "Abono Pecuniário Mês Anterior" || DC == "Crédito Estouro de Salário" || DC == "Gratificações" || DC == "Crédito de INSS" || "1/3 Abono Pecuniário no mês" || "Abono Pecuniário no mês"
+    return DC == "Salário" || DC == "Adicional Insalubridade" || DC == "Saldo de Salário" || DC == "Horas Extras 60%" || DC == "Dia do Comerciario" || DC == "Aviso Prévio Indenizado" || DC == "Aviso Prévio - Lei 12.506/11" || DC == "Diferença Salarial" || DC == "Quebra de Caixa" || DC == "Adicional Periculosidade" || DC == "Adicional Noturno 25%" || DC == "Horas Extras 50%" || DC == "Horas Extras 100%" || DC == "Adicional Noturno valor" || DC == "D.S.R. Sobre Horas Extras" || DC == "DSR Adicional Noturno" || DC == "Salário Afast Pago Empregador" || DC == "Adicional Noturno 35%" || DC == "Horas Extras 80%" || DC == "Abono Pecuniário" || DC == "1/3 Abono Pecuniário" || DC == "Hora Atividade" || DC == "1/3 Abono Pecuniário Mês Ant."  || DC == "Abono Pecuniário Mês Anterior" || DC == "Crédito Estouro de Salário" || DC == "Gratificações" || DC == "Crédito de INSS" || DC == "1/3 Abono Pecuniário no mês" || DC == "Abono Pecuniário no mês"
 }
 GrupoINSS() {
     return DC == "INSS Sobre Salário" || DC == "IRRF Sobre Salário" || DC == "INSS Sobre Salário (Rescisão)" || DC == "INSS Sobre 13º Sal. (Rescisão)" || DC == "IRRF Descontado nas Férias" || DC == "INSS Férias Mês -Recibo" || DC == "INSS Férias Mês Anterior" || DC == "IRRF Sobre 13º Salário" || DC == "INSS Sobre 13º. Salário"
