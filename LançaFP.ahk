@@ -1698,7 +1698,7 @@ GrupoContribuicao() {
 }
 
 GrupoPensao() {
-    return DC == "Pensão Alimenticia Salário" || DC == "Pensão Alimenticia" || DC == "Pensão Sobre Salário Minimo"
+    return DC == "Pensão Alimenticia Salário" || DC == "Pensão Alimenticia" || DC == "Pensão Sobre Salário Minimo" || DC == "Pensao Alimenticia"
 }
 
 GrupoDesc13(){
