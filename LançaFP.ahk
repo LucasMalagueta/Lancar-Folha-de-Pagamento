@@ -1678,7 +1678,7 @@ GrupoSalarioMaternidade() {
 }
 
 GrupoFalta() {
-    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)"
+    return DC == "Faltas (Dias)" || DC == "Farmácia" || DC == "Vale  Compras" || DC == "Adiantamento" || DC == "Empréstimo" || DC == "Arredondamento Anterior" || DC == "Aviso Previo Descontado" || DC == "Emprestimo" || DC == "Vale Transportes" || DC == "Vale Transportes" || DC == "Artigo 480 CLT" || DC == "Plano de Saúde" || DC == "Faltas DSR (Dias)" || DC == "Faltas / Atrasos DSR (Horas)" || DC == "Débito Estouro de Salário"
 }
 
 GrupoLiquidoRecisao() {
